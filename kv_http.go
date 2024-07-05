@@ -66,7 +66,7 @@ func (kvHttp *KVStoreHTTP) setHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rev := -1
-	if revStr := r.Header.Get("Lowdb-revision"); len(revStr) > 0 {
+	if revStr := r.Header.Get("Lowdb-Revision"); len(revStr) > 0 {
 		var err error
 		rev, err = strconv.Atoi(revStr)
 		if err != nil {

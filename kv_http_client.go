@@ -94,19 +94,19 @@ func (c *KVStoreHTTPClient) Get(key string) (KeyValueMetadata, error) {
 
 func (c *KVStoreHTTPClient) Set(data KeyValueMetadata) error {
 	url := fmt.Sprintf("http://localhost/%s/", data.Key)
-	headers := make(http.Header)
-	headers.Add("Lowdb-Key", data.Key)
-	headers.Add("Lowdb-Revision", strconv.Itoa(data.Revision))
-	for k, vs := range data.Headers {
-		for _, v := range vs {
-			headers.Add("Lowdb-Meta-"+k, v)
-		}
-	}
 	buffer := bytes.NewReader(data.Value)
-
 	req, err := http.NewRequest("POST", url, buffer)
 	if err != nil {
 		return err
+	}
+	req.Header.Add("Lowdb-Key", data.Key)
+	if data.Revision >= 0 {
+		req.Header.Add("Lowdb-Revision", strconv.Itoa(data.Revision))
+	}
+	for k, vs := range data.Headers {
+		for _, v := range vs {
+			req.Header.Add("Lowdb-Meta-"+k, v)
+		}
 	}
 
 	resp, err := c.Client.Do(req)
@@ -126,18 +126,13 @@ func (c *KVStoreHTTPClient) Set(data KeyValueMetadata) error {
 
 func (c *KVStoreHTTPClient) Delete(data KeyValueMetadata) error {
 	url := fmt.Sprintf("http://localhost/%s/", data.Key)
-	headers := make(http.Header)
-	headers.Add("Lowdb-Key", data.Key)
-	headers.Add("Lowdb-Revision", strconv.Itoa(data.Revision))
-	for k, vs := range data.Headers {
-		for _, v := range vs {
-			headers.Add("Lowdb-MetA-"+k, v)
-		}
-	}
-
 	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
 		return err
+	}
+	req.Header.Add("Lowdb-Key", data.Key)
+	if data.Revision >= 0 {
+		req.Header.Add("Lowdb-Revision", strconv.Itoa(data.Revision))
 	}
 
 	resp, err := c.Client.Do(req)
