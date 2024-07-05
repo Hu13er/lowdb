@@ -59,7 +59,7 @@ func (c *KVStoreHTTPClient) Get(key string) (KeyValueMetadata, error) {
 		return kvm, err
 	}
 
-	kvm.Key = resp.Header.Get("LOWDB-key")
+	kvm.Key = resp.Header.Get("Lowdb-Key")
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -67,14 +67,14 @@ func (c *KVStoreHTTPClient) Get(key string) (KeyValueMetadata, error) {
 	}
 	kvm.Value = body
 
-	revStr := resp.Header.Get("LOWDB-revision")
+	revStr := resp.Header.Get("Lowdb-Revision")
 	rev, err := strconv.Atoi(revStr)
 	if err != nil {
 		return kvm, UnexpectedServerValue
 	}
 	kvm.Revision = rev
 
-	createdAtStr := resp.Header.Get("LOWDB-created_at")
+	createdAtStr := resp.Header.Get("Lowdb-Created_at")
 	createdAt, err := time.Parse(time.ANSIC, createdAtStr)
 	if err != nil {
 		return kvm, UnexpectedServerValue
@@ -83,7 +83,7 @@ func (c *KVStoreHTTPClient) Get(key string) (KeyValueMetadata, error) {
 
 	kvm.Headers = make(map[string][]string)
 	for k, vs := range resp.Header {
-		trimedk := strings.TrimPrefix(k, "LOWDB-META-")
+		trimedk := strings.TrimPrefix(k, "Lowdb-Meta-")
 		if k == trimedk {
 			continue
 		}
@@ -95,11 +95,11 @@ func (c *KVStoreHTTPClient) Get(key string) (KeyValueMetadata, error) {
 func (c *KVStoreHTTPClient) Set(data KeyValueMetadata) error {
 	url := fmt.Sprintf("http://localhost/%s/", data.Key)
 	headers := make(http.Header)
-	headers.Add("LOWDB-key", data.Key)
-	headers.Add("LOWDB-revision", strconv.Itoa(data.Revision))
+	headers.Add("Lowdb-Key", data.Key)
+	headers.Add("Lowdb-Revision", strconv.Itoa(data.Revision))
 	for k, vs := range data.Headers {
 		for _, v := range vs {
-			headers.Add("LOWDB-META-"+k, v)
+			headers.Add("Lowdb-Meta-"+k, v)
 		}
 	}
 	buffer := bytes.NewReader(data.Value)
@@ -127,11 +127,11 @@ func (c *KVStoreHTTPClient) Set(data KeyValueMetadata) error {
 func (c *KVStoreHTTPClient) Delete(data KeyValueMetadata) error {
 	url := fmt.Sprintf("http://localhost/%s/", data.Key)
 	headers := make(http.Header)
-	headers.Add("LOWDB-key", data.Key)
-	headers.Add("LOWDB-revision", strconv.Itoa(data.Revision))
+	headers.Add("Lowdb-Key", data.Key)
+	headers.Add("Lowdb-Revision", strconv.Itoa(data.Revision))
 	for k, vs := range data.Headers {
 		for _, v := range vs {
-			headers.Add("LOWDB-META-"+k, v)
+			headers.Add("Lowdb-MetA-"+k, v)
 		}
 	}
 

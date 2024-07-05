@@ -46,14 +46,15 @@ func (kvHttp *KVStoreHTTP) getHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	r.Header.Add("LOWDB-key", data.Key)
-	r.Header.Add("LOWDB-revision", strconv.Itoa(data.Revision))
-	r.Header.Add("LOWDB-created_at", data.CreatedAt.Format(time.ANSIC))
+	w.Header().Add("Lowdb-Key", data.Key)
+	w.Header().Add("Lowdb-Revision", strconv.Itoa(data.Revision))
+	w.Header().Add("Lowdb-Created_at", data.CreatedAt.Format(time.ANSIC))
 	for k, vs := range data.Headers {
 		for _, v := range vs {
-			r.Header.Add("LOWDB-META-"+k, v)
+			w.Header().Add("Lowdb-Meta-"+k, v)
 		}
 	}
+
 	w.Write(data.Value)
 }
 
@@ -65,7 +66,7 @@ func (kvHttp *KVStoreHTTP) setHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rev := -1
-	if revStr := r.Header.Get("LOWDB-revision"); len(revStr) > 0 {
+	if revStr := r.Header.Get("Lowdb-revision"); len(revStr) > 0 {
 		var err error
 		rev, err = strconv.Atoi(revStr)
 		if err != nil {
@@ -76,7 +77,7 @@ func (kvHttp *KVStoreHTTP) setHandler(w http.ResponseWriter, r *http.Request) {
 
 	headers := make(map[string][]string)
 	for k, vs := range r.Header {
-		trimedk := strings.TrimPrefix(k, "LOWDB-META-")
+		trimedk := strings.TrimPrefix(k, "Lowdb-Meta-")
 		if trimedk == k {
 			continue
 		}
@@ -115,7 +116,7 @@ func (kvHttp *KVStoreHTTP) deleteHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	rev := -1
-	if revStr := r.Header.Get("LOWDB-revision"); len(revStr) > 0 {
+	if revStr := r.Header.Get("Lowdb-Revision"); len(revStr) > 0 {
 		var err error
 		rev, err = strconv.Atoi(revStr)
 		if err != nil {
