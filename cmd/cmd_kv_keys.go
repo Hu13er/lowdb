@@ -9,10 +9,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// keysCmd represents the keys command
 var keysCmd = &cobra.Command{
 	Use:     "keys",
-	Aliases: []string{"key", "k"},
+	Aliases: []string{"key", "k", "ls", "list"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		socketfile := Config.WithCobra(cmd).SocketFilePath()
 		c := lowdb.NewKVStoreHTTPClient(socketfile)
