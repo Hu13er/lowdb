@@ -11,8 +11,8 @@ var (
 )
 
 type KVStore interface {
-	Keys() []string
-	Get(key string) KeyValueMetadata
+	Keys() ([]string, error)
+	Get(key string) (KeyValueMetadata, error)
 	Set(data KeyValueMetadata) error
 	Delete(data KeyValueMetadata) error
 }
@@ -43,20 +43,20 @@ func NewMemoryKVStore() KVStore {
 	}
 }
 
-func (kv *memoryKVStore) Keys() []string {
+func (kv *memoryKVStore) Keys() ([]string, error) {
 	kv.mu.RLock()
 	defer kv.mu.RUnlock()
 	result := make([]string, 0, len(kv.data))
 	for k := range kv.data {
 		result = append(result, k)
 	}
-	return result
+	return result, nil
 }
 
-func (kv *memoryKVStore) Get(key string) KeyValueMetadata {
+func (kv *memoryKVStore) Get(key string) (KeyValueMetadata, error) {
 	kv.mu.RLock()
 	defer kv.mu.RUnlock()
-	return kv.data[key]
+	return kv.data[key], nil
 }
 
 func (kv *memoryKVStore) Set(data KeyValueMetadata) error {
