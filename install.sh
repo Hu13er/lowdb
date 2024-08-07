@@ -16,8 +16,6 @@ mkdir -p $BINPATH
 echo "* Building binary into $BINPATH..."
 go build -o "$BINPATH/lowdb" ./cmd
 
-[ -n "$SUDO_USER" ] && echo "PASHM: $SUDO_USER" #USER=$SUDO_USER
-
 echo "* Writing systemd unit file for user $USER into /tmp/lowdb.service"
 cat <<EOF > /tmp/lowdb.service
 [Unit]
@@ -37,10 +35,12 @@ if [ "$EUID" -ne 0 ]; then
   echo "sudo cp /tmp/lowdb.service /etc/systemd/system/lowdb.service"
   echo "sudo systemctl daemon-reload"
   echo "sudo systemctl start lowdb.service"
+  echo "sudo systemctl enable lowdb.service"
 else
   cp /tmp/lowdb.service /etc/systemd/system/lowdb.service
   systemctl daemon-reload
   systemctl start lowdb.service
+  sudo systemctl enable lowdb.service
 fi
 
 echo "* Done"
